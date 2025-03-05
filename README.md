@@ -15,7 +15,11 @@ This movie lists movies from a CSV file to a movies DB.
 ![Alt text](images/movies_db_usage.gif)
 
 ## How to Run
-Kindly run the script from here - [launch_movies_db.py](launch_movies_db.py)
+First fix the data, create db and append values, and launch the UI
+1) [movies_csv_data.py](movies_csv_data.py)
+2) [movies_db.py](movies_db.py)
+3) [launch_movies_db.py](launch_movies_db.py)
+
 
 ## License
 [GNU GENERAL PUBLIC LICENSE](LICENSE)
