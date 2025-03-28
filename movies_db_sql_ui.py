@@ -30,6 +30,12 @@ from PySide2.QtWidgets import (
 # pylint: disable=import-error
 import movies_csv_data
 
+DATABASE_NAME: str
+HOST_NAME: str
+USER_NAME: str
+PASSWORD: str
+PORT: int
+
 
 # pylint: disable=too-many-instance-attributes
 class CSVWin(QMainWindow):
@@ -93,11 +99,11 @@ class CSVWin(QMainWindow):
     def create_connection() -> None:
         """This function creates a Movie DB connection with postgres driver"""
         database = QSqlDatabase.addDatabase("QPSQL")
-        database.setDatabaseName("movies")
-        database.setHostName("localhost")
-        database.setUserName("postgres")
-        database.setPassword("123456789")
-        database.setPort(5432)
+        database.setDatabaseName(DATABASE_NAME)
+        database.setHostName(HOST_NAME)
+        database.setUserName(USER_NAME)
+        database.setPassword(PASSWORD)
+        database.setPort(PORT)
 
         if not database.open():
             print("Unable to open data source file")
