@@ -1,3 +1,5 @@
+"""Modules to fix spellings"""
+
 import re
 from typing import List
 
@@ -11,7 +13,7 @@ def fix_spellings(pattern: str, column_category: List[str], new_name: str) -> No
         column_category(List(str)): Column name in which you want to fix spelling
         new_name(str): Correct Spelling
     """
-    compile_pattern = re.compile(r"({})".format(pattern))
+    compile_pattern = re.compile(f"({pattern})")
     get_idx = [
         column_category.index(value)
         for value in column_category
