@@ -13,7 +13,6 @@ from PySide2.QtSql import (
 from PySide2.QtWidgets import (
     QAbstractItemView,
     QAction,
-    QApplication,
     QComboBox,
     QHBoxLayout,
     QHeaderView,
@@ -92,9 +91,13 @@ class CSVWin(QMainWindow):
 
     @staticmethod
     def create_connection() -> None:
-        """This function creates a Movie DB connection"""
-        database = QSqlDatabase.addDatabase("QSQLITE")
-        database.setDatabaseName("file/movies.db")
+        """This function creates a Movie DB connection with postgres driver"""
+        database = QSqlDatabase.addDatabase("QPSQL")
+        database.setDatabaseName("movies")
+        database.setHostName("localhost")
+        database.setUserName("postgres")
+        database.setPassword("123456789")
+        database.setPort(5432)
 
         if not database.open():
             print("Unable to open data source file")
@@ -140,7 +143,6 @@ class CSVWin(QMainWindow):
 
         # Sorting Movie Table columns - options and connections.
         sort_options = [
-            "Sort by ID",
             "Sort by Film ID",
             "Sort by Film Name",
             "Sort by Genre",
@@ -192,24 +194,21 @@ class CSVWin(QMainWindow):
         """This function sets the headers of the Movie DB tables."""
 
         self.model.setHeaderData(
-            self.model.fieldIndex("id"), Qt.Orientation.Horizontal, "ID"
+            self.model.fieldIndex("id"), Qt.Orientation.Horizontal, "Film ID"
         )
         self.model.setHeaderData(
-            self.model.fieldIndex("film_id"), Qt.Orientation.Horizontal, "Film ID"
-        )
-        self.model.setHeaderData(
-            self.model.fieldIndex("film_name"), Qt.Orientation.Horizontal, "Film Name"
+            self.model.fieldIndex("film"), Qt.Orientation.Horizontal, "Film Name"
         )
         self.model.setHeaderData(
             self.model.fieldIndex("genre"), Qt.Orientation.Horizontal, "Genre"
         )
         self.model.setHeaderData(
-            self.model.fieldIndex("lead_studio"),
+            self.model.fieldIndex("lead_studios"),
             Qt.Orientation.Horizontal,
-            "Lead Studio",
+            "Lead Studios",
         )
         self.model.setHeaderData(
-            self.model.fieldIndex("audience_score"),
+            self.model.fieldIndex("audience_score_percent"),
             Qt.Orientation.Horizontal,
             "Audience Score %",
         )
@@ -219,12 +218,12 @@ class CSVWin(QMainWindow):
             "Profitability",
         )
         self.model.setHeaderData(
-            self.model.fieldIndex("rotten_tomatoes"),
+            self.model.fieldIndex("rotten_tomatoes_percent"),
             Qt.Orientation.Horizontal,
             "Rotten Tomatoes %",
         )
         self.model.setHeaderData(
-            self.model.fieldIndex("worldwide"),
+            self.model.fieldIndex("worldwide_gross"),
             Qt.Orientation.Horizontal,
             "Worldwide Gross $",
         )
@@ -262,15 +261,14 @@ class CSVWin(QMainWindow):
             text: Sorting Options from Combobox.
 
         """
-        if text == "Sort by ID":
-            self.model.setSort(self.model.fieldIndex("id"), Qt.SortOrder.AscendingOrder)
-        elif text == "Sort by Film ID":
+
+        if text == "Sort by Film ID":
             self.model.setSort(
-                self.model.fieldIndex("film_id"), Qt.SortOrder.AscendingOrder
+                self.model.fieldIndex("id"), Qt.SortOrder.AscendingOrder
             )
         elif text == "Sort by Film Name":
             self.model.setSort(
-                self.model.fieldIndex("film_name"), Qt.SortOrder.AscendingOrder
+                self.model.fieldIndex("film"), Qt.SortOrder.AscendingOrder
             )
         elif text == "Sort by Genre":
             self.model.setSort(
@@ -278,7 +276,7 @@ class CSVWin(QMainWindow):
             )
         elif text == "Sort by Lead Studio":
             self.model.setSort(
-                self.model.fieldIndex("lead_studio"), Qt.SortOrder.AscendingOrder
+                self.model.fieldIndex("lead_studios"), Qt.SortOrder.AscendingOrder
             )
         elif text == "Sort by Profitability":
             self.model.setSort(
@@ -286,11 +284,11 @@ class CSVWin(QMainWindow):
             )
         elif text == "Sort by Rotten Tomatoes":
             self.model.setSort(
-                self.model.fieldIndex("rotten_tomatoes"), Qt.SortOrder.AscendingOrder
+                self.model.fieldIndex("rotten_tomatoes_percent"), Qt.SortOrder.AscendingOrder
             )
         elif text == "Sort by Worldwide":
             self.model.setSort(
-                self.model.fieldIndex("worldwide"), Qt.SortOrder.AscendingOrder
+                self.model.fieldIndex("worldwide_gross"), Qt.SortOrder.AscendingOrder
             )
         elif text == "Sort by Year":
             self.model.setSort(
@@ -314,7 +312,7 @@ class CSVWin(QMainWindow):
         if not search_text:
             self.model.setFilter("")
         else:
-            self.model.setFilter(f"film_name LIKE '%{search_text}%'")
+            self.model.setFilter(f"film LIKE '%{search_text}%'")
         self.model.select()
 
     def audience_score_filter(self) -> None:
@@ -325,5 +323,5 @@ class CSVWin(QMainWindow):
             self.model.setFilter(self.filter_audience_score["All"])
         else:
             operator = self.filter_audience_score[value]
-            self.model.setFilter(f"audience_score {operator} {score}")
+            self.model.setFilter(f"audience_score_percent {operator} {score}")
         self.model.select()
